@@ -3,7 +3,7 @@ from tkinter import *
 from tkinter import messagebox
 
 
-def mine_sweeper(colour="#39d972"):
+def mine_sweeper(master, colour="#39d972"):
     class MineSweeperCell(Label):
         '''Creates a minesweeper square that is part of a grid'''
 
@@ -256,7 +256,7 @@ def mine_sweeper(colour="#39d972"):
         height = 10
         numBombs = 30
         global root
-        root = Tk()
+        root = Toplevel(master)
         root.maxsize(270, 335)
         root.minsize(270, 335)
         root.title('Minesweeper')
@@ -265,6 +265,3 @@ def mine_sweeper(colour="#39d972"):
         game.mainloop()
 
     __init__()
-
-
-mine_sweeper()

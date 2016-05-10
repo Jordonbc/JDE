@@ -7,6 +7,8 @@ from tkinter import *
 from JDE.Interfaces import start
 from Programs import jpad
 from Programs import info
+from Programs import imageViewer
+from Programs import minesweeper
 
 desktopLog = logging.getLogger("desktop.py")
 
@@ -113,6 +115,7 @@ class desktop:
         try:
             # start.start(self.menuColour, event.x_root, event.y_root)
             self.contextMenu.post(event.x_root, event.y_root)
+            self.contextMenu.focus()
         except Exception as e:
             desktopLog.error(str(e))
 
@@ -125,16 +128,34 @@ class desktop:
     def createContextMenu(self):
         desktopLog.debug("Running createContextMenu")
         try:
-            self.contextMenu = Menu(self.window, tearoff=0)
+            self.contextMenu = Menu(self.window, tearoff=0, bg=self.contextMenuColour)
+
+            self.games = Menu(self.contextMenu, bg=self.contextMenuColour)
+            self.applications = Menu(self.contextMenu, bg=self.contextMenuColour)
+
+            def minesweeperRun():
+                minesweeper.mine_sweeper(self.window, self.menuColour)
+
+            def jpadEdit():
+                jpad.jpadEditor(self.window)
+
+            def viewImage():
+                imageViewer.imageViewer(self.window)
 
             self.contextMenu.add_command(label="Refresh", command=self.desktopRefresh)
-            self.contextMenu.add_command(label="Jpad", command=jpad.jpadEditor)
-            self.contextMenu.add_command(label="File Explorer", state=DISABLED)
-            self.contextMenu.add_command(label="Hardware Monitor", state=DISABLED)
-            self.contextMenu.add_command(label="Music Player", state=DISABLED)
-            self.contextMenu.add_command(label="Info", command=info.info)
-            self.contextMenu.add_command(label="Terminal", state=DISABLED)
-            self.contextMenu.add_command(label="Settings", state=DISABLED)
+
+            self.contextMenu.add_cascade(label="Games", menu=self.games)
+            self.contextMenu.add_cascade(label="Applications", menu=self.applications)
+
+            self.applications.add_command(label="Jpad", command=jpadEdit)
+            self.applications.add_command(label="View Images", command=viewImage)
+            self.games.add_command(label="Minesweeper", command=minesweeperRun)
+            self.applications.add_command(label="File Explorer", state=DISABLED)
+            self.applications.add_command(label="Hardware Monitor", state=DISABLED)
+            self.applications.add_command(label="Music Player", state=DISABLED)
+            self.applications.add_command(label="Info", command=info.info)
+            self.applications.add_command(label="Terminal", state=DISABLED)
+            self.applications.add_command(label="Settings", state=DISABLED)
             self.contextMenu.add_command(label="Restart", state=DISABLED)
             self.contextMenu.add_command(label="Shutdown", command=sys.exit)
 
@@ -155,12 +176,12 @@ class desktop:
             prefix = self.user_dir
 
             # prefix = os.path.expanduser("~")
-            def openFile(self):
+            def openFile(event):
                 # print(fName)
                 self.fileURL = prefix + "/Desktop/" + str(fName[files])
                 # print(fileURL)
                 self.a = jpad
-                self.a.jpadEditor(str(self.fileURL))
+                self.a.jpadEditor(self.window, str(self.fileURL))
 
             def openFolder(self):
                 self.folderURL = prefix + "/Desktop/" + str(fName[files])
@@ -193,8 +214,8 @@ class desktop:
                         else:
                             pass
                         self.l[files].place(x=int(100), y=int(70) + self.space, anchor=CENTER)
-            except:
-                pass
+            except Exception as e:
+                desktopLog.error(str(e))
         except Exception as e:
             desktopLog.error(str(e))
 
@@ -211,7 +232,6 @@ class desktop:
             start.start(self.menuColour, int(0), int(self.window.winfo_height()))
         except Exception as e:
             desktopLog.error(str(e))
-            pass
 
     def createBackground(self):
         try:
@@ -280,6 +300,7 @@ class desktop:
             self.cTime = time.strftime("%H:%M")
             self.time1 = ""
             self.menuColour = config["colour"].replace("\n", "")
+            self.contextMenuColour = config["contextMenuColour"].replace("\n", "")
             self.startMenuPic = config["startPic"].replace("\n", "")
             self.background = config["background"]
             self.user_dir = config["userDirs"] + username + "/"
