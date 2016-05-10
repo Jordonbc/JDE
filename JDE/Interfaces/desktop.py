@@ -6,6 +6,7 @@ from tkinter import *
 
 from JDE.Interfaces import start
 from Programs import jpad
+from Programs import info
 
 desktopLog = logging.getLogger("desktop.py")
 
@@ -50,7 +51,7 @@ class desktop:
 
             # self.startPic.place_configure(x=int(0), y=int(self.cHeight) - 55)
 
-            self.search.place_configure(x=57, y=int(self.cHeight) - 55, height=55, width=200)
+            self.search.place_configure(x=0, y=int(self.cHeight) - 55, height=55, width=300)
 
             # versionText.place(x=int(cWidth) - 300, y=int(cHeight) - 120)
 
@@ -102,7 +103,7 @@ class desktop:
             self.search = Entry(self.window, textvariable=self.searchvar, font=(14), bg=self.menuColour)
             self.search.bind("<Button-1>", self.box)
             self.search.bind("<Return>", self.search_internet)
-            self.search.place(x=57, y=350, height=50, width=100)
+            self.search.place(x=0, y=350, height=50, width=100)
             self.search.insert(0, "Search")
         except Exception as e:
             desktopLog.error(str(e))
@@ -131,7 +132,7 @@ class desktop:
             self.contextMenu.add_command(label="File Explorer", state=DISABLED)
             self.contextMenu.add_command(label="Hardware Monitor", state=DISABLED)
             self.contextMenu.add_command(label="Music Player", state=DISABLED)
-            self.contextMenu.add_command(label="Info", state=DISABLED)
+            self.contextMenu.add_command(label="Info", command=info.info)
             self.contextMenu.add_command(label="Terminal", state=DISABLED)
             self.contextMenu.add_command(label="Settings", state=DISABLED)
             self.contextMenu.add_command(label="Restart", state=DISABLED)
@@ -246,8 +247,8 @@ class desktop:
             self.notifcationBar = Frame(self.window, bg=self.menuColour)
             self.notifcationBar.place(x=int(self.width) - 100, y=int(self.height) - 55)
 
-            self.window.attributes('-fullscreen', False)
-            self.max = 0
+            self.window.attributes('-fullscreen', True)
+            self.max = 1
 
             self.displayTime = Label(self.notifcationBar, text=self.cTime, bg=self.menuColour, font=("System", 20))
             self.displayTime.pack(side=RIGHT)
