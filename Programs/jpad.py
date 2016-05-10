@@ -88,7 +88,7 @@ class jpadEditor:
             self.jpadFile = open(str(self.jpadFile), "w")
             if self.jpadFile != None:
                 # slice off the last character from get, as an extra return is added
-                self.data = self.textPad.get(0.0, END)
+                self.data = str(self.textPad.get(0.0, END)).replace("\n", "")
                 self.jpadFile.write(self.data)
                 self.jpadFile.close()
         except Exception as e:
@@ -100,9 +100,11 @@ class jpadEditor:
             self.jpadFile = open(str(self.jpadFile), "w")
             if self.jpadFile != None:
                 # slice off the last character from get, as an extra return is added
-                self.data = self.textPad.get(0.0, END)
+                self.data = str(self.textPad.get(0.0, END)).replace("\n", "")
                 self.jpadFile.write(self.data)
                 self.jpadFile.close()
+            else:
+                self.saveAs_command()
         except Exception as e:
             jpadLog.error(str(e))
 
@@ -125,7 +127,7 @@ class jpadEditor:
             jpadLog.error(str(e))
 
     def chfont(self):
-        def apply(self):
+        def apply():
             try:
                 self.textPad.configure(font=(self.font1.get(), int(self.font2.get()), self.font3.get()))
                 self.font[0] = self.font1.get()
@@ -165,18 +167,21 @@ class jpadEditor:
         self.textPad.configure(font=(self.font[0], int(self.font[1]), self.font[2]))
         self.textPad.focus()
 
-        if self.jpadFile != None:
-            self.window.title("Jpad Text Editor" + "     File: " + str(self.jpadFile))
-            self.jpadFile = open(str(self.jpadFile), "r")
-            self.contents = self.jpadFile.read()
-            self.textPad.delete(0.0, END)
-            self.textPad.insert(0.0, self.contents)
-            self.jpadFile.close()
+        try:
+            if self.jpadFile != None:
+                self.window.title("Jpad Text Editor" + "     File: " + str(self.jpadFile))
+                self.jpadFile = open(str(self.jpadFile), "r")
+                self.contents = self.jpadFile.read()
+                self.textPad.delete(0.0, END)
+                self.textPad.insert(0.0, self.contents)
+                self.jpadFile.close()
+        except:
+            pass
 
         self.textPad.pack(expand=YES, fill=BOTH)
 
     def createWindow(self):
-        self.window = Tk()
+        self.window = Toplevel(self.master)
         self.sWidth = self.window.winfo_screenwidth()
         self.sHeight = self.window.winfo_screenheight()
         self.window.title("Jpad")
@@ -191,23 +196,21 @@ class jpadEditor:
 
         self.window.mainloop()
 
-    def __init__(self, file=None):
-        self.recentAdd = open("JDE/Recent", "a")
-        self.recentAdd.write("\n")
-        self.recentAdd.write("jpad")
-        self.recentAdd.close()
+    def __init__(self, master, file=None):
         self.jpadFile = file
+        self.master = master
         self.width = "500"
         self.height = "400"
         self.appFocus = 1
         self.widthHeight = self.width + "x" + self.height
-        self.menuColour = config["colour"].replace("\n", "")
+        try:
+            self.menuColour = config["colour"].replace("\n", "")
+        except:
+            self.menuColour = None
         self.font = ["Arial", "11", "normal"]
 
-        try:
-            self.appIcon = Button(self.toolbar, text="Jpad", command=self.focusApp)
-            self.appIcon.pack(side=LEFT, fill=Y)
-        except:
-            pass
-
         self.createWindow()
+
+
+if __name__ == "__main__":
+    jpadEditor(None)
