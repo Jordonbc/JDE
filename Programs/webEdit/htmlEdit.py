@@ -131,7 +131,7 @@ class webEdit:
         fileMenu.add_separator()
         fileMenu.add_command(label="Settings", command=openSettings)
         fileMenu.add_separator()
-        fileMenu.add_command(label="Exit", command=quit)
+        fileMenu.add_command(label="Exit", command=self.root.destroy)
 
         menu.add_command(label="View in  browser", command=view_default)
 
