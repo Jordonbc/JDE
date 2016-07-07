@@ -9,8 +9,10 @@ from Programs import jpad
 from Programs import info
 from Programs import imageViewer
 from Programs import minesweeper
+from Programs import terminal
+from Programs.webEdit import htmlEdit as webEdit
 
-desktopLog = logging.getLogger("desktop.py")
+desktopLog = logging.getLogger(__name__)
 
 desktopLog.debug("Atempting to read settings file")
 try:
@@ -23,7 +25,7 @@ except Exception as e:
 
 class desktop:
     def box(self, event):
-        desktopLog.debug("Running box")
+        desktopLog.debug("Running "+desktop.box.__name__)
         try:
             if (self.clicked == False):
                 self.searchvar.set("")
@@ -33,7 +35,7 @@ class desktop:
             desktopLog.error(str(e))
 
     def search_internet(self, event):
-        desktopLog.debug("Running search_internet")
+        desktopLog.debug("Running "+desktop.search_internet.__name__)
         # TODO: Find a way to implement a browser
         try:
             webbrowser.open_new_tab("https://www.google.co.uk/#q=" + self.searchvar.get().replace(" ", "+"))
@@ -41,7 +43,7 @@ class desktop:
             desktopLog.error(str(e))
 
     def reposition(self, event):
-        desktopLog.debug("Running reposition")
+        desktopLog.debug("Running "+desktop.reposition.__name__)
         try:
             self.cHeight = self.window.winfo_height()
             self.cWidth = self.window.winfo_width()
@@ -70,7 +72,7 @@ class desktop:
             desktopLog.error(str(e))
 
     def fullScreen(self, event):
-        desktopLog.debug("Running fullscreen")
+        desktopLog.debug("Running "+desktop.fullScreen.__name__)
         try:
             if self.max == 0:
                 self.window.attributes('-fullscreen', True)
@@ -82,7 +84,7 @@ class desktop:
             desktopLog.error(str(e))
 
     def clockTick(self):
-        desktopLog.debug("Running clockTick")
+        desktopLog.debug("Running "+desktop.clockTick.__name__)
         try:
             self.desktopRefresh()
             # cTime = time.strftime("%H:%M:%S")
@@ -98,7 +100,7 @@ class desktop:
             desktopLog.error(str(e))
 
     def createSearch(self):
-        desktopLog.debug("Running createSearch")
+        desktopLog.debug("Running "+desktop.createSearch.__name__)
         try:
             self.searchText = Label(self.window, text="Search for: ")
             self.searchvar = StringVar()
@@ -111,7 +113,7 @@ class desktop:
             desktopLog.error(str(e))
 
     def contextMenuPopup(self, event):
-        desktopLog.debug("Running contextMenuPopup")
+        desktopLog.debug("Running "+desktop.contextMenuPopup.__name__)
         try:
             # start.start(self.menuColour, event.x_root, event.y_root)
             self.contextMenu.post(event.x_root, event.y_root)
@@ -126,7 +128,7 @@ class desktop:
         self.contextMenu.add_command(label=label, command=command, state=state)
 
     def createContextMenu(self):
-        desktopLog.debug("Running createContextMenu")
+        desktopLog.debug("Running "+desktop.createContextMenu.__name__)
         try:
             self.contextMenu = Menu(self.window, tearoff=0, bg=self.contextMenuColour)
 
@@ -142,29 +144,36 @@ class desktop:
             def viewImage():
                 imageViewer.imageViewer(self.window)
 
+            def runTerminal():
+                terminal.terminal(self.window)
+
+            def webEditor():
+                webEdit.webEdit(self.window)
+
             self.contextMenu.add_command(label="Refresh", command=self.desktopRefresh)
 
             self.contextMenu.add_cascade(label="Games", menu=self.games)
             self.contextMenu.add_cascade(label="Applications", menu=self.applications)
 
             self.applications.add_command(label="Jpad", command=jpadEdit)
+            self.applications.add_command(label="WebEdit", command=webEditor)
             self.applications.add_command(label="View Images", command=viewImage)
             self.games.add_command(label="Minesweeper", command=minesweeperRun)
             self.applications.add_command(label="File Explorer", state=DISABLED)
             self.applications.add_command(label="Hardware Monitor", state=DISABLED)
             self.applications.add_command(label="Music Player", state=DISABLED)
             self.applications.add_command(label="Info", command=info.info)
-            self.applications.add_command(label="Terminal", state=DISABLED)
+            self.applications.add_command(label="Terminal", state=ACTIVE, command=runTerminal)
             self.applications.add_command(label="Settings", state=DISABLED)
             self.contextMenu.add_command(label="Restart", state=DISABLED)
-            self.contextMenu.add_command(label="Shutdown", command=sys.exit)
+            self.contextMenu.add_command(label="Exit", command=sys.exit)
 
         except Exception as e:
             desktopLog.error(str(e))
 
     def desktopRefresh(self):
         try:
-            desktopLog.debug("Running desktopRefresh")
+            desktopLog.debug("Running "+desktop.desktopRefresh.__name__)
             self.fileImage = PhotoImage(file="JDE/Images/file.png")
             self.f = []
             self.l = []
@@ -220,14 +229,14 @@ class desktop:
             desktopLog.error(str(e))
 
     def refresh(self):
-        desktopLog.debug("Running refresh")
+        desktopLog.debug("Running "+desktop.refresh.__name__)
         try:
             self.desktopRefresh()
         except Exception as e:
             desktopLog.error(str(e))
 
     def createStart(self):
-        desktopLog.debug("Running createStartPic")
+        desktopLog.debug("Running "+desktop.createStart.__name__)
         try:
             start.start(self.menuColour, int(0), int(self.window.winfo_height()))
         except Exception as e:
@@ -235,21 +244,21 @@ class desktop:
 
     def createBackground(self):
         try:
-            desktopLog.debug("Running createBackground")
+            desktopLog.debug("Running "+desktop.createBackground.__name__)
             self.background_image = PhotoImage(file=self.background)
             self.canvas.create_image(0, 0, image=self.background_image, anchor=NW)
         except Exception as e:
             desktopLog.error(str(e))
 
     def createIcon(self):
-        desktopLog.debug("Running createIcon")
+        desktopLog.debug("Running"+desktop.createIcon.__name__)
         try:
             self.window.wm_iconbitmap("System/JordonOS Logo.ico")
         except Exception as e:
             desktopLog.error(str(e))
 
     def createWindow(self):
-        desktopLog.debug("Running createWindow")
+        desktopLog.debug("Running "+desktop.createWindow.__name__)
         try:
             self.window = Tk()
             self.window.title("Jordon's Desktop Environment")
@@ -291,7 +300,7 @@ class desktop:
             desktopLog.error(str(e))
 
     def __init__(self, windowTitle="Desktop Environment", width="1920", height="1080", minWidth="", username=""):
-        desktopLog.debug("Running __init__")
+        desktopLog.debug("Running "+desktop.__init__.__name__)
         try:
             self.width = width
             self.height = height

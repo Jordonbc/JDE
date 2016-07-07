@@ -1,9 +1,16 @@
 __author__ = "Jordonbc"
 import logging
 import time
+import os
 
-logging.basicConfig(filename='JDE/Logs/' + str(time.strftime('%d-%m-%Y-%H-%M%p') + ".log"), level=logging.DEBUG)
-jdeLog = logging.getLogger("JDE.py")
+if not os.path.exists("JDE/Logs"):
+    os.mkdir("JDE/Logs")
+
+logging.basicConfig(filename='JDE/Logs/' + str(time.strftime('%d-%m-%Y-%H-%M%p') + ".log"), level=logging.DEBUG,
+                    datefmt='%I:%M:%S %p',
+                    format='%(asctime)s:%(name)s:%(lineno)d}:%(levelname)s - %(message)s')
+
+jdeLog = logging.getLogger(__name__)
 
 jdeLog.info("Importing tkinter")
 try:
@@ -31,7 +38,7 @@ except Exception as e:
 
 jdeLog.info("Importing JDE/Interfaces/desktop")
 try:
-    from JDE.Interfaces import desktop
+    from JDE.Interfaces import desktop as desktop
 
     jdeLog.info("Import Successful!")
 except Exception as e:
@@ -45,9 +52,6 @@ try:
     userFile.close()
     os.remove("active")
 
-    print(username)
-
-    desktopApp = desktop.desktop
-    desktopApp(username=username)
+    desktop.desktop(windowTitle="JDE Desktop", username=username)
 except Exception as e:
     jdeLog.critical(str(e))

@@ -1,7 +1,7 @@
 import logging
 from tkinter import *
 
-loginLog = logging.getLogger("login.py")
+loginLog = logging.getLogger(__name__)
 
 
 class login:
@@ -20,6 +20,7 @@ class login:
             self.file.close()
         except:
             self.message.configure(text="Err: Username or password is incorrect!")
+
         self.file = open(self.userDirs + self.username.lower() + ".profile", "r")
 
         self.line = self.file.readlines()

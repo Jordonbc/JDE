@@ -2,7 +2,7 @@ import logging
 from tkinter import *
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 
-jpadLog = logging.getLogger("jpad.py")
+jpadLog = logging.getLogger(__name__)
 
 jpadLog.debug("Atempting to read settings file")
 try:
@@ -15,14 +15,14 @@ except Exception as e:
 
 class jpadEditor:
     def minimize(self):
-        jpadLog.debug("Running minimize")
+        jpadLog.debug("Running "+jpadEditor.minimize.__name__)
         try:
             self.appFocus = 0
         except Exception as e:
             jpadLog.error(str(e))
 
     def closeApp(self):
-        jpadLog.debug("Running closeApp")
+        jpadLog.debug("Running "+jpadEditor.closeApp.__name__)
         try:
             # self.appIcon.destroy()
             self.window.destroy()
@@ -30,7 +30,7 @@ class jpadEditor:
             jpadLog.error(str(e))
 
     def focusApp(self):
-        jpadLog.debug("Running focusApp")
+        jpadLog.debug("Running "+jpadEditor.focusApp.__name__)
         try:
             if self.appFocus == 0:
                 self.window.focus_force()
@@ -43,7 +43,7 @@ class jpadEditor:
             jpadLog.error(str(e))
 
     def createMenu(self):
-        jpadLog.debug("Running createMenu")
+        jpadLog.debug("Running "+jpadEditor.createMenu.__name__)
         try:
             self.menu = Menu(self.window)
             self.window.config(menu=self.menu)
@@ -63,7 +63,7 @@ class jpadEditor:
             jpadLog.error(str(e))
 
     def new(self):
-        jpadLog.debug("Running new")
+        jpadLog.debug("Running "+jpadEditor.new.__name__)
         try:
             self.window.title("Jpad Text Editor" + "     File: New File")
             self.textPad.delete(0.0, END)
@@ -71,14 +71,14 @@ class jpadEditor:
             jpadLog.error(str(e))
 
     def exit_command(self):
-        jpadLog.debug("Running exit_command")
+        jpadLog.debug("Running "+jpadEditor.exit_command.__name__)
         try:
             self.closeApp()
         except Exception as e:
             jpadLog.error(str(e))
 
     def saveAs_command(self):
-        jpadLog.debug("Running saveAs_command")
+        jpadLog.debug("Running "+jpadEditor.saveAs_command.__name__)
         try:
             self.jpadFile = asksaveasfilename(defaultextension=".txt",
                                               filetypes=[("Text Files", ".txt"), ("Python .py", ".py"),
@@ -95,7 +95,7 @@ class jpadEditor:
             jpadLog.error(str(e))
 
     def save_command(self):
-        jpadLog.debug("Running save_command")
+        jpadLog.debug("Running "+jpadEditor.save_command.__name__)
         try:
             self.jpadFile = open(str(self.jpadFile), "w")
             if self.jpadFile != None:
@@ -109,7 +109,7 @@ class jpadEditor:
             jpadLog.error(str(e))
 
     def open_command(self):
-        jpadLog.debug("Running open_command")
+        jpadLog.debug("Running "+jpadEditor.open_command.__name__)
         try:
             self.jpadFile = askopenfilename(defaultextension=".txt",
                                             filetypes=[("Text Files", ".txt"), ("Python .py", ".py"),
