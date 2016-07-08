@@ -2,6 +2,8 @@ import logging
 import os
 import time
 import webbrowser
+import PIL.Image
+import PIL.ImageTk
 from tkinter import *
 
 from JDE.Interfaces import start
@@ -63,6 +65,16 @@ class desktop:
 
             self.notifcationBar.place_configure(x=int(self.cWidth) - 500, y=int(self.cHeight) - 55, height=55,
                                                 width=500)
+            if config["resizeBackground"]:
+                try:
+                    self.canvas.delete("background")
+                    backgroundResized = self.image.resize((self.cWidth, self.cHeight), PIL.Image.ANTIALIAS)
+                    backgroundResizedImage = PIL.ImageTk.PhotoImage(backgroundResized)
+                    self.canvas.backgroundImage = backgroundResizedImage
+                    self.canvas.create_image(0, 0, image=backgroundResizedImage, anchor=NW, tag="background")
+                except Exception as e:
+                    desktopLog.error(str(e))
+
 
             self.windowX = self.window.winfo_x()
             self.windowY = (self.window.winfo_y() + self.window.winfo_height())
@@ -245,8 +257,11 @@ class desktop:
     def createBackground(self):
         try:
             desktopLog.debug("Running "+desktop.createBackground.__name__)
-            self.background_image = PhotoImage(file=self.background)
-            self.canvas.create_image(0, 0, image=self.background_image, anchor=NW)
+            self.image = PIL.Image.open(self.background)
+            self.background_image = PIL.ImageTk.PhotoImage(self.image)
+            self.canvas.background_image = self.background_image
+            self.canvas.create_image(0, 0, image=self.background_image, anchor=NW, tag="background")
+            self.canvas.configure(relief=FLAT, highlightthickness=0)
         except Exception as e:
             desktopLog.error(str(e))
 

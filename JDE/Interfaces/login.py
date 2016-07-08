@@ -1,7 +1,17 @@
 import logging
+import PIL.Image
+import PIL.ImageTk
 from tkinter import *
 
 loginLog = logging.getLogger(__name__)
+
+loginLog.debug("Atempting to read settings file")
+try:
+    config = {}
+    exec(open("JDE/Settings/settings.conf").read(), config)
+    loginLog.debug("System settings Detected!")
+except Exception as e:
+    loginLog.error(str(e))
 
 
 class login:
@@ -10,6 +20,16 @@ class login:
         self.frame.place_configure(x=int(self.window.winfo_width() / 3), y=self.window.winfo_height() / 3,
                                    width=int(int(self.window.winfo_width()) / 3),
                                    height=int(int(self.window.winfo_height()) / 3))
+        if config["resizeBackground"]:
+            try:
+                self.canvas.delete("Background")
+                background_image_resized = self.bg_image.resize((self.window.winfo_width(), self.window.winfo_height()),
+                                                                PIL.Image.ANTIALIAS)
+                background_image = PIL.ImageTk.PhotoImage(background_image_resized)
+                self.canvas.backgroundImage = background_image
+                self.canvas.create_image(0, 0, image=background_image, anchor=NW, tag="Background")
+            except Exception as e:
+                loginLog.error(str(e))
 
     def callback(self, event):
         loginLog.debug("Running callback")
@@ -80,8 +100,11 @@ class login:
     def createBackground(self):
         loginLog.debug("Running createBackground")
         try:
-            self.background_image = PhotoImage(file=self.bg)
-            self.canvas.create_image(0, 0, image=self.background_image, anchor=NW)
+            self.bg_image = PIL.Image.open(self.bg, "r")
+            self.background_image = PIL.ImageTk.PhotoImage(self.bg_image)
+            self.canvas.bgImage = self.background_image
+            self.canvas.create_image(0, 0, image=self.background_image, anchor=NW, tag="Background")
+            self.canvas.configure(highlightthickness=0, relief=FLAT)
             self.canvas.pack(expand=YES, fill=BOTH)
         except Exception as e:
             loginLog.error(str(e))

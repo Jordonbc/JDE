@@ -2,6 +2,7 @@ __author__ = "Jordonbc"
 import logging
 import time
 import os
+import sys
 
 if not os.path.exists("JDE/Logs"):
     os.mkdir("JDE/Logs")
@@ -11,6 +12,8 @@ logging.basicConfig(filename='JDE/Logs/' + str(time.strftime('%d-%m-%Y-%H-%M%p')
                     format='%(asctime)s:%(name)s:%(lineno)d}:%(levelname)s - %(message)s')
 
 jdeLog = logging.getLogger(__name__)
+
+jdeLog.info("Python version: "+str(sys.version_info[0])+"."+str(sys.version_info[1])+"."+str(sys.version_info[2]))
 
 jdeLog.info("Importing tkinter")
 try:
