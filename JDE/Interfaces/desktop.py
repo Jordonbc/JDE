@@ -13,6 +13,7 @@ from Programs import imageViewer
 from Programs import minesweeper
 from Programs import terminal
 from Programs.webEdit import htmlEdit as webEdit
+from Programs import FileBrowser
 import threading
 
 desktopLog = logging.getLogger(__name__)
@@ -28,7 +29,7 @@ except Exception as e:
 
 class desktop:
     def box(self, event):
-        desktopLog.debug("Running "+desktop.box.__name__)
+        desktopLog.debug("Running " + desktop.box.__name__)
         try:
             if (self.clicked == False):
                 self.searchvar.set("")
@@ -38,7 +39,7 @@ class desktop:
             desktopLog.error(str(e))
 
     def search_internet(self, event):
-        desktopLog.debug("Running "+desktop.search_internet.__name__)
+        desktopLog.debug("Running " + desktop.search_internet.__name__)
         # TODO: Find a way to implement a browser
         try:
             webbrowser.open_new_tab("https://www.google.co.uk/#q=" + self.searchvar.get().replace(" ", "+"))
@@ -47,7 +48,7 @@ class desktop:
 
     def reposition(self, event):
         if self.tempWidth != self.window.winfo_width() or self.tempHeight != self.window.winfo_height():
-            desktopLog.debug("Running "+desktop.reposition.__name__)
+            desktopLog.debug("Running " + desktop.reposition.__name__)
             try:
                 self.cHeight = self.window.winfo_height()
                 self.cWidth = self.window.winfo_width()
@@ -81,11 +82,11 @@ class desktop:
                                 self.canvas.create_image(0, 0, image=self.background_image, anchor=NW, tag="background")
                             except Exception as e:
                                 desktopLog.error(str(e))
+
                 threading.Thread(target=searchPlaceRepos, daemon=True).start()
                 threading.Thread(target=toolbarPlaceRepos, daemon=True).start()
                 threading.Thread(target=notifyBarPlaceRepos, daemon=True).start()
                 threading.Thread(target=resizeBackground, daemon=True).start()
-
 
                 self.windowX = self.window.winfo_x()
                 self.windowY = (self.window.winfo_y() + self.window.winfo_height())
@@ -95,7 +96,7 @@ class desktop:
                 desktopLog.error(str(e))
 
     def fullScreen(self, event):
-        desktopLog.debug("Running "+desktop.fullScreen.__name__)
+        desktopLog.debug("Running " + desktop.fullScreen.__name__)
         try:
             if self.max == 0:
                 self.window.attributes('-fullscreen', True)
@@ -107,7 +108,7 @@ class desktop:
             desktopLog.error(str(e))
 
     def clockTick(self):
-        desktopLog.debug("Running "+desktop.clockTick.__name__)
+        desktopLog.debug("Running " + desktop.clockTick.__name__)
         try:
             self.desktopRefresh()
             # cTime = time.strftime("%H:%M:%S")
@@ -123,7 +124,7 @@ class desktop:
             desktopLog.error(str(e))
 
     def createSearch(self):
-        desktopLog.debug("Running "+desktop.createSearch.__name__)
+        desktopLog.debug("Running " + desktop.createSearch.__name__)
         try:
             self.searchText = Label(self.window, text="Search for: ")
             self.searchvar = StringVar()
@@ -136,7 +137,7 @@ class desktop:
             desktopLog.error(str(e))
 
     def contextMenuPopup(self, event):
-        desktopLog.debug("Running "+desktop.contextMenuPopup.__name__)
+        desktopLog.debug("Running " + desktop.contextMenuPopup.__name__)
         try:
             # start.start(self.menuColour, event.x_root, event.y_root)
             self.contextMenu.post(event.x_root, event.y_root)
@@ -151,12 +152,15 @@ class desktop:
         self.contextMenu.add_command(label=label, command=command, state=state)
 
     def createContextMenu(self):
-        desktopLog.debug("Running "+desktop.createContextMenu.__name__)
+        desktopLog.debug("Running " + desktop.createContextMenu.__name__)
         try:
-            self.contextMenu = Menu(self.window, tearoff=0, bg=self.contextMenuColour)
+            self.contextMenu = Menu(self.window, tearoff=0, bg=self.contextMenuColour, bd=0, relief=FLAT)
 
-            self.games = Menu(self.contextMenu, bg=self.contextMenuColour)
-            self.applications = Menu(self.contextMenu, bg=self.contextMenuColour)
+            self.games = Menu(self.contextMenu, bg=self.contextMenuColour, tearoff=0, relief=FLAT, bd=0)
+            self.applications = Menu(self.contextMenu, bg=self.contextMenuColour, tearoff=0, relief=FLAT, bd=0)
+
+            def FileBrowserRun():
+                FileBrowser.fileBrowser(self.window, os.path.realpath(os.path.dirname(__file__+"../../../")))
 
             def minesweeperRun():
                 minesweeper.mine_sweeper(self.window, self.menuColour)
@@ -178,6 +182,7 @@ class desktop:
             self.contextMenu.add_cascade(label="Games", menu=self.games)
             self.contextMenu.add_cascade(label="Applications", menu=self.applications)
 
+            self.applications.add_command(label="File Browser", command=FileBrowserRun)
             self.applications.add_command(label="Jpad", command=jpadEdit)
             self.applications.add_command(label="WebEdit", command=webEditor)
             self.applications.add_command(label="View Images", command=viewImage)
@@ -196,7 +201,7 @@ class desktop:
 
     def desktopRefresh(self):
         try:
-            desktopLog.debug("Running "+desktop.desktopRefresh.__name__)
+            desktopLog.debug("Running " + desktop.desktopRefresh.__name__)
             self.fileImage = PhotoImage(file="JDE/Images/file.png")
             self.f = []
             self.l = []
@@ -231,7 +236,7 @@ class desktop:
 
                         self.space += 80
 
-                        self.f.append(Button(self.window, image=self.fileImage))
+                        self.f.append(Button(self.window, image=self.fileImage, relief=FLAT))
 
                         self.f[files].place(x=int(80), y=int(20) + self.space, width=40, height=40)
 
@@ -252,14 +257,14 @@ class desktop:
             desktopLog.error(str(e))
 
     def refresh(self):
-        desktopLog.debug("Running "+desktop.refresh.__name__)
+        desktopLog.debug("Running " + desktop.refresh.__name__)
         try:
             self.desktopRefresh()
         except Exception as e:
             desktopLog.error(str(e))
 
     def createStart(self):
-        desktopLog.debug("Running "+desktop.createStart.__name__)
+        desktopLog.debug("Running " + desktop.createStart.__name__)
         try:
             start.start(self.menuColour, int(0), int(self.window.winfo_height()))
         except Exception as e:
@@ -267,7 +272,7 @@ class desktop:
 
     def createBackground(self):
         try:
-            desktopLog.debug("Running "+desktop.createBackground.__name__)
+            desktopLog.debug("Running " + desktop.createBackground.__name__)
             self.image = PIL.Image.open(self.background)
             self.background_image = PIL.ImageTk.PhotoImage(self.image)
             self.canvas.background_image = self.background_image
@@ -277,14 +282,14 @@ class desktop:
             desktopLog.error(str(e))
 
     def createIcon(self):
-        desktopLog.debug("Running"+desktop.createIcon.__name__)
+        desktopLog.debug("Running" + desktop.createIcon.__name__)
         try:
             self.window.wm_iconbitmap("System/JordonOS Logo.ico")
         except Exception as e:
             desktopLog.error(str(e))
 
     def createWindow(self):
-        desktopLog.debug("Running "+desktop.createWindow.__name__)
+        desktopLog.debug("Running " + desktop.createWindow.__name__)
         try:
             self.window = Tk()
             self.window.title("Jordon's Desktop Environment")
@@ -310,7 +315,10 @@ class desktop:
             self.displayTime = Label(self.notifcationBar, text=self.cTime, bg=self.menuColour, font=("System", 20))
             self.displayTime.pack(side=RIGHT)
 
-            self.window.bind("<F5>", self.refresh)
+            def manFefresh(event):
+                self.refresh()
+
+            self.window.bind("<F5>", manFefresh)
 
             self.window.bind("<Escape>", self.fullScreen)
             self.window.bind("<Configure>", self.reposition)
@@ -328,7 +336,7 @@ class desktop:
             desktopLog.error(str(e))
 
     def __init__(self, windowTitle="Desktop Environment", width="1920", height="1080", minWidth="", username=""):
-        desktopLog.debug("Running "+desktop.__init__.__name__)
+        desktopLog.debug("Running " + desktop.__init__.__name__)
         try:
             self.width = width
             self.height = height
