@@ -13,6 +13,7 @@ from Programs import imageViewer
 from Programs import minesweeper
 from Programs import terminal
 from Programs.webEdit import htmlEdit as webEdit
+import threading
 
 desktopLog = logging.getLogger(__name__)
 
@@ -45,43 +46,53 @@ class desktop:
             desktopLog.error(str(e))
 
     def reposition(self, event):
-        desktopLog.debug("Running "+desktop.reposition.__name__)
-        try:
-            self.cHeight = self.window.winfo_height()
-            self.cWidth = self.window.winfo_width()
+        if self.tempWidth != self.window.winfo_width() or self.tempHeight != self.window.winfo_height():
+            desktopLog.debug("Running "+desktop.reposition.__name__)
+            try:
+                self.cHeight = self.window.winfo_height()
+                self.cWidth = self.window.winfo_width()
 
-            self.centerWidth = self.window.winfo_x() + int(int(self.cWidth) / 2)
-            self.centerHeight = self.window.winfo_y() + int(int(self.cHeight) / 2)
+                self.centerWidth = self.window.winfo_x() + int(int(self.cWidth) / 2)
+                self.centerHeight = self.window.winfo_y() + int(int(self.cHeight) / 2)
 
-            self.screenCenter = str(self.centerWidth) + "+" + str(self.centerHeight)
+                self.screenCenter = str(self.centerWidth) + "+" + str(self.centerHeight)
 
-            # self.startPic.place_configure(x=int(0), y=int(self.cHeight) - 55)
+                # self.startPic.place_configure(x=int(0), y=int(self.cHeight) - 55)
+                def searchPlaceRepos():
+                    self.search.place_configure(x=0, y=int(self.cHeight) - 55, height=55, width=300)
 
-            self.search.place_configure(x=0, y=int(self.cHeight) - 55, height=55, width=300)
+                # versionText.place(x=int(cWidth) - 300, y=int(cHeight) - 120)
 
-            # versionText.place(x=int(cWidth) - 300, y=int(cHeight) - 120)
+                def toolbarPlaceRepos():
+                    self.toolbar.place_configure(x=258, y=int(self.cHeight) - 55, height=55, width=int(self.cWidth))
 
-            self.toolbar.place_configure(x=258, y=int(self.cHeight) - 55, height=55, width=int(self.cWidth))
+                def notifyBarPlaceRepos():
+                    self.notifcationBar.place_configure(x=int(self.cWidth) - 500, y=int(self.cHeight) - 55, height=55,
+                                                        width=500)
 
-            self.notifcationBar.place_configure(x=int(self.cWidth) - 500, y=int(self.cHeight) - 55, height=55,
-                                                width=500)
-            if config["resizeBackground"]:
-                try:
-                    self.canvas.delete("background")
-                    backgroundResized = self.image.resize((self.cWidth, self.cHeight), PIL.Image.ANTIALIAS)
-                    backgroundResizedImage = PIL.ImageTk.PhotoImage(backgroundResized)
-                    self.canvas.backgroundImage = backgroundResizedImage
-                    self.canvas.create_image(0, 0, image=backgroundResizedImage, anchor=NW, tag="background")
-                except Exception as e:
-                    desktopLog.error(str(e))
+                def resizeBackground():
+                    if self.background_image.width() != self.cWidth or self.background_image.height() != self.cHeight:
+                        if config["resizeBackground"]:
+                            try:
+                                self.canvas.delete("background")
+                                backgroundResized = self.image.resize((self.cWidth, self.cHeight), PIL.Image.ANTIALIAS)
+                                self.background_image = PIL.ImageTk.PhotoImage(backgroundResized)
+                                self.canvas.backgroundImage = self.background_image
+                                self.canvas.create_image(0, 0, image=self.background_image, anchor=NW, tag="background")
+                            except Exception as e:
+                                desktopLog.error(str(e))
+                threading.Thread(target=searchPlaceRepos, daemon=True).start()
+                threading.Thread(target=toolbarPlaceRepos, daemon=True).start()
+                threading.Thread(target=notifyBarPlaceRepos, daemon=True).start()
+                threading.Thread(target=resizeBackground, daemon=True).start()
 
 
-            self.windowX = self.window.winfo_x()
-            self.windowY = (self.window.winfo_y() + self.window.winfo_height())
+                self.windowX = self.window.winfo_x()
+                self.windowY = (self.window.winfo_y() + self.window.winfo_height())
 
-            # displayTime.pack_configure(side=RIGHT)
-        except Exception as e:
-            desktopLog.error(str(e))
+                # displayTime.pack_configure(side=RIGHT)
+            except Exception as e:
+                desktopLog.error(str(e))
 
     def fullScreen(self, event):
         desktopLog.debug("Running "+desktop.fullScreen.__name__)
@@ -116,7 +127,7 @@ class desktop:
         try:
             self.searchText = Label(self.window, text="Search for: ")
             self.searchvar = StringVar()
-            self.search = Entry(self.window, textvariable=self.searchvar, font=(14), bg=self.menuColour)
+            self.search = Entry(self.window, textvariable=self.searchvar, font=(14), bg=self.menuColour, relief=FLAT)
             self.search.bind("<Button-1>", self.box)
             self.search.bind("<Return>", self.search_internet)
             self.search.place(x=0, y=350, height=50, width=100)
@@ -281,6 +292,8 @@ class desktop:
             self.window.minsize(640, 360)
             self.windowX = self.window.winfo_x()
             self.windowY = self.window.winfo_y()
+            self.tempWidth = self.window.winfo_width()
+            self.tempHeight = self.window.winfo_height()
 
             self.canvas = Canvas(self.window, width=self.width, height=self.height)
             self.canvas.pack(expand=YES, fill=BOTH)

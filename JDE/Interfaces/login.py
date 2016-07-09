@@ -2,6 +2,7 @@ import logging
 import PIL.Image
 import PIL.ImageTk
 from tkinter import *
+import threading
 
 loginLog = logging.getLogger(__name__)
 
@@ -16,20 +17,30 @@ except Exception as e:
 
 class login:
     def reposition(self, event):
-        loginLog.debug("Running reposition")
-        self.frame.place_configure(x=int(self.window.winfo_width() / 3), y=self.window.winfo_height() / 3,
-                                   width=int(int(self.window.winfo_width()) / 3),
-                                   height=int(int(self.window.winfo_height()) / 3))
-        if config["resizeBackground"]:
-            try:
-                self.canvas.delete("Background")
-                background_image_resized = self.bg_image.resize((self.window.winfo_width(), self.window.winfo_height()),
-                                                                PIL.Image.ANTIALIAS)
-                background_image = PIL.ImageTk.PhotoImage(background_image_resized)
-                self.canvas.backgroundImage = background_image
-                self.canvas.create_image(0, 0, image=background_image, anchor=NW, tag="Background")
-            except Exception as e:
-                loginLog.error(str(e))
+        if self.tempWidth != self.window.winfo_width() or self.tempHeight != self.window.winfo_height():
+            loginLog.debug("Running reposition")
+            def reposFrame():
+                self.frame.place_configure(x=int(self.window.winfo_width() / 3), y=self.window.winfo_height() / 3,
+                                           width=int(int(self.window.winfo_width()) / 3),
+                                           height=int(int(self.window.winfo_height()) / 3))
+
+            if self.background_image.width() != self.window.winfo_width() or self.background_image.height() != self.window.winfo_height():
+                def reposBackground():
+                        if config["resizeBackground"]:
+                            try:
+                                self.canvas.delete("Background")
+                                background_image_resized = self.bg_image.resize((self.window.winfo_width(), self.window.winfo_height()),
+                                                                                PIL.Image.ANTIALIAS)
+                                self.background_image = PIL.ImageTk.PhotoImage(background_image_resized)
+                                self.canvas.backgroundImage = self.background_image
+                                self.canvas.create_image(0, 0, image=self.background_image, anchor=NW, tag="Background")
+                            except Exception as e:
+                                loginLog.error(str(e))
+
+                threading.Thread(target=reposFrame, daemon=True).start()
+                threading.Thread(target=reposBackground, daemon=True).start()
+            self.tempWidth = self.window.winfo_width()
+            self.tempHeight = self.window.winfo_height()
 
     def callback(self, event):
         loginLog.debug("Running callback")
@@ -79,7 +90,13 @@ class login:
         self.go.bind("<Button-1>", self.callback)
         self.go.bind("<Return>", self.callback)
         self.passw.bind("<Return>", self.callback)
-        self.window.bind("<Configure>", self.reposition)
+
+        self.reposition(self)
+
+        def configureWindow():
+            self.window.bind("<Configure>", self.reposition)
+
+        threading.Thread(target=configureWindow, daemon=True).start()
 
         self.window.mainloop()
 
@@ -126,6 +143,9 @@ class login:
         self.canvas = Canvas(self.window, width=self.bgWidth, height=self.bgHeight)
         self.frame = Frame(self.canvas)
         self.frame.configure(bg=self.bgColour)
+
+        self.tempWidth = self.window.winfo_width()
+        self.tempHeight = self.window.winfo_height()
 
         self.canvas.pack()
 
