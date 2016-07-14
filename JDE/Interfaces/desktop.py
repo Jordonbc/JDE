@@ -176,6 +176,8 @@ class desktop:
 
             def webEditor():
                 webEdit.webEdit(self.window)
+            # def runPymonitor():
+            #     pyMonitor.pyMonitor(self.window)
 
             self.contextMenu.add_command(label="Refresh", command=self.desktopRefresh)
 
